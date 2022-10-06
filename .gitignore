@@ -1,0 +1,5 @@
+.vscode
+.*__pyache__
+multigpu/data/*
+multigpu/reference/data/*
+*.pyc

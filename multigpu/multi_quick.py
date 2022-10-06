@@ -1,16 +1,18 @@
 """
 multigpu_torchrun
 """
-import os # handle 
+import os  # handle
+import random
+
+import numpy as np
 import torch
-from torch import nn
 import torch.distributed as dist
-from torchvision import datasets
+from torch import nn
 from torch.utils.data import DataLoader
+from torchvision import datasets
 from torchvision.transforms import ToTensor
 from tqdm import *
-import random
-import numpy as np
+
 
 def ddp_setup():
     dist.init_process_group(backend='nccl')
@@ -77,7 +79,7 @@ def train(dataloader, model, loss_fn, optimizer):
         pred = model(X)
         loss = loss_fn(pred, y)
 
-        # Backpropagation
+        # Back propagation
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -118,7 +120,7 @@ def main(epochs: int, batch_size: int):
     train_dataloader, test_dataloader = load_data(batch_size)
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
-    
+
     pbar = tqdm(range(epochs))
     for t in pbar:
         pbar.set_description(f"GPU{local_rank} epoch {t}/{epochs}")
@@ -138,3 +140,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main(args.epochs, args.batch_size)
+
